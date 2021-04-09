@@ -1,0 +1,16 @@
+{
+  "name": "redmine_numericfield_chart_macro",
+  "version": "0.0.1",
+  "main": "index.rb",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "description": "",
+  "dependencies": {
+    "chart.js": "^3.0.2",
+    "moment": "^2.29.1",
+    "chartjs-adapter-moment": "^1.0.0"
+  }
+}
