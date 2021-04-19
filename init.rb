@@ -72,7 +72,7 @@ Redmine::WikiFormatting::Macros.register do
       end
       .to_h
       .map do |subject, journals|
-        {:label => subject, :data => journals.map {|j| {:x => j["created_on"], :y => j["value"]}}}
+        {:label => subject, :data => journals.map {|j| {:x => j["created_on"], :y => j["value"], :id => j["id"]}}}
       end
 
     content_tag :div do
@@ -100,8 +100,14 @@ Redmine::WikiFormatting::Macros.register do
         var myChart = new Chart(ctx, {
           type: 'scatter',
           data: { datasets },
-          options: { scales: { x: { type: 'time' } }, showLine: true,
-          responsive: true, maintainAspectRatio: true }
+          options: {
+            scales: { x: { type: 'time' } },
+            showLine: true,
+            responsive: true,
+            maintainAspectRatio: true,
+            onClick: (e, el) => {if(el.length==1){
+              window.location.pathname=`/issues/${myChart.data.datasets[el[0].datasetIndex].data[0].id}`}},
+          }
         });
       JAVASCRIPT
     end
