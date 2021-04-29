@@ -39,7 +39,13 @@ Redmine::WikiFormatting::Macros.register do
     if(args.empty?)
       raise "numericfield_chart: no issue numbers. it requires issue numbers follows with a custom field name."
     end
-    issues = args.map &:to_i
+    issues = []
+    if args.first.to_i > 0 then
+      issues = args.map &:to_i
+    else
+      query = IssueQuery.find_by(:name => args.first)
+      issues = query.issue_ids if query.visible?
+    end
     issues.delete(0)
 
     details =
