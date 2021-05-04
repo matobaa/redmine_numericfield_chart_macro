@@ -44,7 +44,7 @@ Redmine::WikiFormatting::Macros.register do
       issues = args.map &:to_i
     else
       query = IssueQuery.find_by(:name => args.first)
-      issues = query.issue_ids if query.visible?
+      issues = query.issue_ids if query&.visible?
     end
     issues.delete(0)
 
