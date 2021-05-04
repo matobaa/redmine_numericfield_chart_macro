@@ -75,6 +75,18 @@ Redmine::WikiFormatting::Macros.register do
         {:label => subject, :data => journals.map {|j| {:x => j["created_on"], :y => j["value"]}}}
       end
 
+    csv = CSV.generate do |csv|
+      csv.add_row([nil] + dataset.map {|d| d[:label] })
+      dataset.each_with_index do |k,i|
+        k[:data].each do |data|
+          row = []
+          row[i+1]=data[:y]
+          row[0]  =data[:x]
+          csv.add_row(row)
+        end
+      end
+    end
+
     content_tag :div do
       concat javascript_include_tag('chart', :plugin => 'redmine_numericfield_chart_macro')
       concat javascript_include_tag('moment', :plugin => 'redmine_numericfield_chart_macro')
@@ -104,6 +116,7 @@ Redmine::WikiFormatting::Macros.register do
           responsive: true, maintainAspectRatio: true }
         });
       JAVASCRIPT
+      concat tag.a 'download csv', :download => "#{cf_name}.csv", :href => "data:text/csv,#{csv}" #:onclick => 'download_csv()'
     end
   end
 end
