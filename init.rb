@@ -39,7 +39,13 @@ Redmine::WikiFormatting::Macros.register do
     if(args.empty?)
       raise "numericfield_chart: no issue numbers. it requires issue numbers follows with a custom field name."
     end
-    issues = args.map &:to_i
+    issues = []
+    if args.first.to_i > 0 then
+      issues = args.map &:to_i
+    else
+      query = IssueQuery.find_by(:name => args.first)
+      issues = query.issue_ids if query.visible?
+    end
     issues.delete(0)
 
     details =
@@ -72,7 +78,7 @@ Redmine::WikiFormatting::Macros.register do
       end
       .to_h
       .map do |subject, journals|
-        {:label => subject, :data => journals.map {|j| {:x => j["created_on"], :y => j["value"]}}}
+        {:label => subject, :data => journals.map {|j| {:x => j["created_on"], :y => j["value"], :id => j["id"]}}}
       end
 
     csv = CSV.generate do |csv|
@@ -112,8 +118,14 @@ Redmine::WikiFormatting::Macros.register do
         var myChart = new Chart(ctx, {
           type: 'scatter',
           data: { datasets },
-          options: { scales: { x: { type: 'time' } }, showLine: true,
-          responsive: true, maintainAspectRatio: true }
+          options: {
+            scales: { x: { type: 'time' } },
+            showLine: true,
+            responsive: true,
+            maintainAspectRatio: true,
+            onClick: (e, el) => {if(el.length==1){
+              window.location.pathname=`/issues/${myChart.data.datasets[el[0].datasetIndex].data[0].id}`}},
+          }
         });
       JAVASCRIPT
       concat tag.a 'download csv', :download => "#{cf_name}.csv", :href => "data:text/csv,#{csv}" #:onclick => 'download_csv()'
