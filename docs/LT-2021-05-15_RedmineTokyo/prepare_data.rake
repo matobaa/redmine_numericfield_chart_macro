@@ -27,6 +27,13 @@ namespace :redmine do
             end
         end
 
+        user = User.find_by(:login => "admin")
+        user&.must_change_passwd = false
+        user&.save!
+        user = User.find_by(:login => "jsmith")
+        user&.must_change_passwd = false
+        user&.save!
+
         status = IssueStatus.first_or_create!(:name => 'New')
         tracker = Tracker.first_or_create!(:name => 'Bug', :default_status => status)
         tracker.issue_statuses.append(status) if !tracker.issue_statuses.include?(status)
@@ -35,11 +42,29 @@ namespace :redmine do
         priority = Enumeration.find_or_create_by!(:name => 'Normal', :is_default => true, :type => 'IssuePriority')
         
         data = JSON.load(<<~EOJ)
-        {"体温": {
-            "お父さん": {"2021-05-08":"36.8"},
-            "お母さん": {"2021-05-09":"", "2021-05-10":"36.3", "2021-05-12":"36.4", "2021-05-13":"36.2"},
-            "お姉ちゃん": {"2021-05-12":"36.5", "2021-05-13":"36.6", "2021-05-14":"37.2", "2021-05-15":"37.5"},
-            "お兄ちゃん": {"2021-05-08":"36.5", "2021-05-09":"36.7", "2021-05-15":"36.4"}
+        {
+        "体温": {
+            "お父さん": {"2021-05-15":"36.8"},
+            "お母さん": {"2021-05-16":"", "2021-05-17":"36.3", "2021-05-19":"36.4", "2021-05-20":"36.2"},
+            "お姉ちゃん": {"2021-05-19":"36.5", "2021-05-20":"36.6", "2021-05-21":"37.2", "2021-05-22":"37.5"},
+            "お兄ちゃん": {"2021-05-15":"36.5", "2021-05-16":"36.7", "2021-05-22":"36.4"}
+        },
+        "ベンチプレス": {
+            "福島由佳子": {"2020-11-22": "130", "2021-04-24": "132.5"},
+            "早川琴果": {"2020-11-22": "122.5", "2021-04-24": "110"},
+            "寺村美香": {"2020-11-22": "107.5", "2021-04-24": "90"},
+            "田中 彰子": {"2021-02-20": "55.0", "2021-04-24": "72.5"}
+        },
+        "残数": {
+            "牛乳": {"2021-05-17": "4", "2021-05-19": "3", "2021-05-20": "2", "2021-05-21": "1"},
+            "納豆": {"2021-05-20": "4", "2021-05-21": "3", "2021-05-22": "2"},
+            "ちゅーる": {"2021-05-15": "6", "2021-05-16": "5", "2021-05-17": "3", "2021-05-18": "8"}
+        },
+        "ごきげん": {
+            "奈良さん": {"2021-05-08": "4.2", "2021-05-15": "4.8"},
+            "あきぴーさん": {"2021-05-15": "4", "2021-05-20": "3.7"},
+            "門屋さん": {"2021-05-15": "5", "2021-05-19": "5"},
+            "matobaa": {"2021-05-08": "5", "2021-05-15": "3.2", "2021-05-21": "2"}
         }
         }
         EOJ
@@ -57,7 +82,8 @@ namespace :redmine do
                 time_series.each do |datetime, value|
                     issue.clear_journal
                     journal = issue.init_journal(author)
-                    cv = CustomValue.find_by(:custom_field => cf, :customized => issue)
+                    p cf, issue
+                    cv = CustomValue.find_by!(:custom_field => cf, :customized => issue)
                     cv.value = value
                     cv.save!
                     Time.fake(Time.parse datetime) do
@@ -72,9 +98,10 @@ namespace :redmine do
 
             issue_id_list = issues.map{|issue| issue.id.to_s}.join(', ')
             wiki = Wiki.find_by!(:project => project)
-            wikipage = WikiPage.find_or_create_by!(:title => 'Demo', :wiki => wiki)
-            wikipage.save_with_content(WikiContent.new(:text => "{{numericfield_chart(#{cf_name},#{issue_id_list})}}"))
+            wikipage = WikiPage.find_or_create_by!(:title => cf_name, :wiki => wiki)
+            wikipage.save_with_content(WikiContent.new(:text => "h1. #{cf_name}\n\n{{numericfield_chart(#{cf_name},#{issue_id_list})}}"))
             wiki.start_page = wikipage.title if !wiki.start_page?
+            wiki.save!
         end
 
     end
