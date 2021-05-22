@@ -1,0 +1,397 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Numericfield Chart Macro - A lightning talk at 20th Redmine.Tokyo</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.0/reset.min.css"
+		integrity="sha512-Mjxkx+r7O/OLQeKeIBCQ2yspG1P5muhAtv/J+p2/aPnSenciZWm5Wlnt+NOUNA4SHbnBIE/R2ic0ZBiCXdQNUg=="
+		crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.0/reveal.min.css"
+		integrity="sha512-zu0eodDPCBAZf1vnIgwZ6qchMBt1xqgGkS9vBjVmunoH8pU7cc9OQKBiSQCclpvqySupy9Y1pLZc87VB40G4Sw=="
+		crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.0/theme/solarized.min.css"
+		integrity="sha512-KajvYx0LNr6yNP0EYF2HDtho+s/YIJixStwpbnSmbtqbxuqTZYFdQm/L2XhBhIpvu+zdyrI4cRnzWjCJ3z1IZA=="
+		crossorigin="anonymous" />
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.0/plugin/highlight/monokai.min.css"
+		integrity="sha512-z8wQkuDRFwCBfoj7KOiu1MECaRVoXx6rZQWL21x0BsVVH7JkqCp1Otf39qve6CrCycOOL5o9vgfII5Smds23rg=="
+		crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
+		integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" crossorigin="anonymous">
+	<style>
+		.email {
+			direction: rtl;
+			unicode-bidi: bidi-override;
+		}
+
+		ol li {
+			margin-top: 1ex;
+		}
+
+		.twitter-tweet {
+			max-height: 300px !important;
+		}
+
+		code.key {
+			padding: 2px 6px 2px 6px;
+			margin: 0 4px 0 4px;
+			border-style: solid;
+			border-color: gold grey grey gold;
+			border-width: 2px;
+			vertical-align: center;
+			font-size: smaller;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/">
+					<img alt="Creative Commons License" style="border-width:0"
+						src="https://i.creativecommons.org/l/by-nd/4.0/88x31.png" align=right />
+				</a>
+				<br clear />
+				<p>時系列データをグラフ化する</p>
+				<h2>Redmine <span style="color: #cc0000">numericfield chart</span> macro</h2>
+				<p>
+					<a href="https://github.com/matobaa/redmine_numericfield_chart_macro">
+						<code style="font-size: 80%">https://github.com/matobaa/redmine_numericfield_chart_macro</code>
+					</a>
+				</p>
+				<br />
+				<hr />
+				<p>Redmine.tokyo 第20回勉強会 2021-05-22 <a href="https://twitter.com/search?q=%23redmineT"><code style="color: #00acee">#redmineT</code></a></p>
+				<p> <a href="mailto:matobaa_at_gmail.com">
+					<svg xmlns="http://www.w3.org/2000/svg" width=1.2em height=1.2ex viewBox="52 42 68 66">
+						<path fill="#4285f4" d="M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6" />
+						<path fill="#34a853" d="M120 108h14c3.32 0 6-2.69 6-6V59l-20 15" />
+						<path fill="#fbbc04" d="M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2" />
+						<path fill="#ea4335" d="M72 74V48l24 18 24-18v26L96 92" />
+						<path fill="#c5221f" d="M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2" />
+					</svg></a>
+					<a href="https://twitter.com/matobaa"><i class="fab fa-twitter-square" aria-hidden="true"></i></a>
+					<a href="https://www.facebook.com/matobaa"><i class="fab fa-facebook-square"
+							aria-hidden="true"></i></a>
+					<a href="https://github.com/matobaa"><i class="fab fa-github-square" aria-hidden="true"></i></a>
+					matobaa
+				</p>
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">numericfield chart</span> macro</h3>
+				<p>CustomFieldの値を時系列グラフにするWikiマクロ<br />
+					<img src=../../chart.png
+						style="height:300px; border-style: solid; border-color: orange; border-width: 1px">
+					<br />
+					<code style="border-width: 3px; border-style: dashed; padding: 5px 15px 5px 15px">
+						{{numericfield_chart(<span style="color:blue">体温</span>,<span style="color:red"> 2, 3, 5, 8</span>)}}</code>
+				<ul>
+					<li>第一引数: <span style="color:blue">カスタムフィールドの名前</li>
+					<li>第二引数以降: <span style="color:red">表示したいIssueの番号</span></li>
+				</ul>
+				</p>
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">numericfield chart</span> macro</h3>
+				<h3>きっかけ</h3>
+				<blockquote align=center class="twitter-tweet" data-lang="ja" data-theme="light">
+					<p lang="ja" dir="ltr">
+						コロナ予防のため、課員全員が各々毎日測っている体温を記録するチケットを作りたいのだが、カスタムフィールド(体温値)へ入れた数値の過去履歴を見ることはできないのだろうか？「ステータス」の様に過去履歴(日時と値)が見れると嬉しいな。方法探ってみる。<a
+							href="https://twitter.com/hashtag/redmine?src=hash&amp;ref_src=twsrc%5Etfw">#redmine</a>
+					</p>&mdash; しろくまくま次郎 (@bear3_2) <a
+						href="https://twitter.com/bear3_2/status/1377466815794741252?ref_src=twsrc%5Etfw">2021年4月1日</a>
+				</blockquote>
+
+				<blockquote align=center class="twitter-tweet" data-conversation="none" data-lang="ja">
+					<p lang="ja" dir="ltr">人単位のチケット、検温値のカスタムフィールドを毎日更新し、その変更履歴を出すとか？<br>journals journal_details
+						テーブルから取れると思います。<a
+							href="https://twitter.com/hashtag/redmine?src=hash&amp;ref_src=twsrc%5Etfw">#redmine</a>
+					</p>&mdash; y503Unavailable@Redmine Kindle本出版unofficialcooking (@y503Unavailable) <a
+						href="https://twitter.com/y503Unavailable/status/1378020915338878982?ref_src=twsrc%5Etfw">2021年4月2日</a>
+				</blockquote>
+				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">numericfield chart</span> macro</h3>
+				<h4>💡「あれ……これってアレに似てるぞ?」</h4>
+				<p>
+					<img src="https://trac-hacks.org/raw-attachment/wiki/StatusHistoryChartMacro/StatusHistoryChartMacro.png"
+						height=300px style=border:0><br />
+					↑ <a href="https://trac-hacks.org/wiki/StatusHistoryChartMacro">StatusHistoryChartMacro</a> ↑
+					<span style=color:blue class=fragment>(ただしTrac用)</span>
+				</p>
+				<p>……RubyもRailsも初級だけれど、作るしかない!<br />
+					→ 作った!!</p>
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">numericfield chart</span> macro</h3>
+				<h3>紹介してもらえた!</h3>
+				<div class="twitter-tweet">
+					<blockquote align=center class="twitter-tweet" data-lang="ja">
+						<p lang="ja" dir="ltr">[Headline] redmine_numericfield_chart_macro
+							は整数または小数形式のカスタムフィールドの時系列変化を折れ線グラフで表示するプラグイン。<a
+								href="https://t.co/3tNeXkZZF3">https://t.co/3tNeXkZZF3</a></p>&mdash; Redmine.JP
+						(@Redmine_JP) <a
+							href="https://twitter.com/Redmine_JP/status/1382887721358618628?ref_src=twsrc%5Etfw">2021年4月16日</a>
+					</blockquote>
+					<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+				</div>
+				うれしい!! 紹介ありがとうございます!
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">numericfield chart</span> macro</h3>
+				<h3>「時系列データ」といえば……</h3>
+				<ol>
+					<li>課員の体温の推移</li>
+					<li>勉強会の参加人数の推移</li>
+					<li>ニコニコカレンダー (気分の推移)</li>
+					<li>スポーツジムでのトレーニングの進捗</li>
+					<li>ご家庭の冷蔵庫の野菜の数</li>
+					<li>お子さんが宿題をやった時間</li>
+				</ol>
+			</section>
+			<section style="color: lightgrey">
+				<h4 style="color: lightgrey">(このへんでデモを挟むのをわすれないこと)</h4>
+				<ul>
+					<li>Redmineを起動しておく</li>
+					<li>デモ用データを流し込んでおく</li>
+					<li><a href="http://localhost:8000/projects/demo/wiki/index">&nbsp;</a>wiki/index を開く</li>
+					<li><a href="http://localhost:8000/projects/demo/issues">&nbsp;</a>issues を開く</li>
+				</ul>
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">numericfield chart</span> macro</h3>
+				<h3>追加のアイデア</h3>
+				<ol>
+					<li><i class="far fa-square"></i> 時間軸を制限したい<br />
+						(「過去14日間を表示」など)</li>
+					<li><i class="far fa-square"></i> ステータス遷移のグラフ<br />
+						(Issueの流入や滞留の状況が見える)
+					</li>
+					<li><i class="fas fa-check-square" style="color: limegreen"></i> 番号じゃなくて検索条件を指定したい<br />
+						<code
+							style="border-width: 3px; border-style: dashed; padding: 5px 15px 5px 15px; font-size: smaller;">
+							{{numericfield_chart(<span style="color:blue">CustomField名</span>,<span style="color:red"> クエリ名</span>)}}</code>
+					</li>
+				</ol>
+			</section>
+			<section>
+				<h3>ありがとうございました!</h3>
+				<p>スター、プルリク、お待ちしています!<br />
+					<a href="https://github.com/matobaa/redmine_numericfield_chart_macro"><code
+							style="font-size: 80%">https://github.com/matobaa/redmine_numericfield_chart_macro</code></a>
+				</p>
+
+				<p>
+					<hr />
+					<img align=right
+						src="https://ja.gravatar.com/userimage/10407487/5b83228358e851977e81156810e64732.jpg?size=130" />
+				<ul>
+					<li>
+						<a href="mailto:matobaa_at_gmail.com">
+							<svg xmlns="http://www.w3.org/2000/svg" width=1.2em height=1.2ex viewBox="52 42 68 66">
+								<path fill="#4285f4" d="M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6" />
+								<path fill="#34a853" d="M120 108h14c3.32 0 6-2.69 6-6V59l-20 15" />
+								<path fill="#fbbc04" d="M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2" />
+								<path fill="#ea4335" d="M72 74V48l24 18 24-18v26L96 92" />
+								<path fill="#c5221f" d="M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2" />
+							</svg></a>
+						<a href="https://twitter.com/matobaa"><i class="fab fa-twitter-square"
+								aria-hidden="true"></i></a>
+						<a href="https://www.facebook.com/matobaa"><i class="fab fa-facebook-square"
+								aria-hidden="true"></i></a>
+						<a href="https://github.com/matobaa"><i class="fab fa-github-square" aria-hidden="true"></i></a>
+						matobaa
+					</li>
+					<li><a href="https://www.nttdata.com/jp/ja/">SIer</a> ソフトウェアアーキテクト</li>
+					<!-- <li><a href="https://www.pref.kanagawa.jp/">神奈川県</a> <a
+							href="https://www.city.fujisawa.kanagawa.jp/">藤沢市</a> 在住</li> -->
+					<li><a href="https://www.oracle.com/jp/java/"><i class="fab fa-java" alt="java"></i></a><a
+							style="font-size:small"
+							href="https://www.oracle.com/jp/java/technologies/javase-java-archive-javase6-downloads.html">(1.6)</a>
+						<a href="https://www.python.org/"><i class="fab fa-python"></i></a><a style="font-size:small"
+							href="https://www.python.org/downloads/release/python-2718/">(2.7)</a>
+						<a href="https://developer.mozilla.org/ja/docs/Web/JavaScript"><i
+								class="fab fa-js-square"></i></a><a style="font-size:small"
+							href="https://262.ecma-international.org/6.0/">(ES6)</a>
+						<a href="https://trac.edgewall.org/"><img style="margin: 0; width: 30px;"
+								src="https://www.edgewall.org/gfx/trac_bullet.png"></img></a><a style="font-size:small"
+							href="https://trac.edgewall.org/wiki/TracDownload#Trac14StableRelease">(1.4)</a>
+					</li>
+				</ul>
+				</p>
+				<p>
+				<ul>
+					<li>2020年11月から <a href="https://cloud.google.com/compute/?hl=ja">
+							<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="36"
+								height="36" viewBox="0 0 128 128">
+								<title>Compute Engine</title>
+								<path
+									d="M126.47,58.12l-26.3-45.74A11.56,11.56,0,0,0,90.31,6.5H37.7a11.55,11.55,0,0,0-9.86,5.88L1.53,58a11.48,11.48,0,0,0,0,11.44l26.3,46a11.77,11.77,0,0,0,9.86,6.09H90.3a11.73,11.73,0,0,0,9.87-6.06l26.3-45.74A11.73,11.73,0,0,0,126.47,58.12Z"
+									style="fill: #4285f4" />
+								<path
+									d="M118.92,82.82,75.64,39.53l-3.1,6.72L65.78,39.5l-3.12,6.69L56,39.52,54.34,47.6l-5.94,1-1.23,5.28-7.68,1.84,6.88,6.88-6.81,3,6.81,6.81L39.52,75.4l46.1,46.1H90.3a11.73,11.73,0,0,0,9.87-6.06Z"
+									style="opacity: 0.070000000298023;isolation: isolate" />
+								<path
+									d="M69.83,57.1H58.42a1.22,1.22,0,0,0-1.21,1.21V69.72a1.22,1.22,0,0,0,1.21,1.22H69.83A1.22,1.22,0,0,0,71,69.72V58.31a1.22,1.22,0,0,0-1.21-1.21"
+									style="fill: #fff" />
+								<path
+									d="M87.89,56.18A1.09,1.09,0,0,0,89,55.09V53.31a1.09,1.09,0,0,0-1.09-1.09H82.34V47a1.22,1.22,0,0,0-1.21-1.21H75.92V40.25a1.09,1.09,0,0,0-1.09-1.09H73.05A1.09,1.09,0,0,0,72,40.25v5.57H66.1V40.25A1.09,1.09,0,0,0,65,39.16H63.24a1.09,1.09,0,0,0-1.09,1.09v5.57H56.29V40.25a1.09,1.09,0,0,0-1.09-1.09H53.42a1.09,1.09,0,0,0-1.09,1.09v5.57H47.13A1.22,1.22,0,0,0,45.91,47v5.19H40.36a1.09,1.09,0,0,0-1.09,1.09v1.78a1.09,1.09,0,0,0,1.09,1.09h5.55V62H40.36a1.09,1.09,0,0,0-1.09,1.09V64.9A1.09,1.09,0,0,0,40.36,66h5.55v5.86H40.36a1.09,1.09,0,0,0-1.09,1.09v1.78a1.09,1.09,0,0,0,1.09,1.09h5.55V81a1.22,1.22,0,0,0,1.21,1.21h5.21v5.57a1.09,1.09,0,0,0,1.09,1.09H55.2a1.09,1.09,0,0,0,1.09-1.09V82.21h5.86v5.57a1.09,1.09,0,0,0,1.09,1.09H65a1.09,1.09,0,0,0,1.09-1.09V82.21H72v5.57a1.09,1.09,0,0,0,1.09,1.09h1.78a1.09,1.09,0,0,0,1.09-1.09V82.21h5.21A1.22,1.22,0,0,0,82.34,81V75.81h5.55A1.09,1.09,0,0,0,89,74.72V72.94a1.09,1.09,0,0,0-1.09-1.09H82.34V66h5.55A1.09,1.09,0,0,0,89,64.9V63.13A1.09,1.09,0,0,0,87.89,62H82.34V56.18h5.55Zm-9.65,22H50V49.9H78.24Z"
+									style="fill: #fff" />
+							</svg></a>で <a href="https://bitnami.com/stack/redmine"><img style="vertical-align:-22px"
+								width=40 height=40
+								src="https://dyltqmyl993wv.cloudfront.net/assets/stacks/redmine/img/redmine-stack-220x234.png" />Bitnami
+							Redmine</a>を使用
+					<li><a href="https://redmine.org/">Redmine</a><a style="font-size:small"
+							href="https://redmine.org/versions/160">(4.1)</a>,
+						<a href="https://rubyonrails.org/">Rails</a><a style="font-size:small"
+							href="https://guides.rubyonrails.org/v5.2/">(5.2)</a>,
+						<a href="https://www.ruby-lang.org/ja/">Ruby</a><a style="font-size:small"
+							href="https://docs.ruby-lang.org/ja/2.5.0/doc/index.html">(2.5)</a> 初級
+					</li>
+					<li>2021年02月の <a href="https://qiita.com/matobaa/items/cfe46048759c34db1664">Redmineパッチ会#8</a> から参加
+					</li>
+				</ul>
+				</p>
+			</section>
+
+			<section>
+				<p>(時間が余ったら)</p>
+				<h2><span style="color:#cc0000">Redmine</span>パッチ会 のご紹介</h2>
+				<p><a href="https://redmine-patch.connpass.com/"><code>https://redmine-patch.connpass.com/</code></a>
+				</p>
+				<br clear />
+				<hr />
+				<p>Redmine.tokyo 第20回勉強会 2021-05-22 <a href="https://twitter.com/search?q=%23redmineT"><code style="color: #00acee">#redmineT</code></a></p>
+				<p> <a href="https://twitter.com/matobaa"><i class="fab fa-twitter-square" aria-hidden="true"></i></a>
+					<a href="https://www.facebook.com/matobaa"><i class="fab fa-facebook-square"
+							aria-hidden="true"></i></a>
+					<a href="https://github.com/matobaa"><i class="fab fa-github-square" aria-hidden="true"></i></a>
+					matobaa
+				</p>
+			</section>
+			<section>
+				<h2><span style="color:#cc0000">Redmine</span>パッチ会</h2>
+				<p>Redmine本体を改善できる人を増やしていくことを目的として、毎月オンライン開催しています。<br/>
+				<a href="https://redmine-patch.connpass.com/event/213982/">次回は6月19日(土) 13時～です</a></p>
+				<div style=" border-style: solid; border-width: 2px;">
+					<ul style="font-size: smaller;">
+						<li>Redmine改善に興味ある方であればどなたでも!</li>
+						<li>プログラミングせず、<a href="https://www.redmine.org/issues/14995">画面の文言変更</a>でもパッチ送れます!</li>
+						<li>一緒に仕様を考えて、<a href="https://www.redmine.org/issues/35017">本家にチケットを作成</a>したりできる!</li>
+						<li>Ruby,Railsの経験があると更に幅は広がります。</li>
+						<li>初参加の場合、見学からでもお気軽にどうぞ(^^</li>
+						<li>環境がなくてもVS CodeのLive Shareでモブプロできます!</li>
+					</ul>
+				</div>
+				<p>私は<a href="https://redmine-patch.connpass.com/event/201730/">第8回(2021年2月)</a>から参加し、たくさん教わりました。<a
+						href="https://qiita.com/matobaa/items/cfe46048759c34db1664">すてきな経験を積めます!</a> オススメです!</p>
+				</ul>
+			</section>
+
+			<section>
+				<p>(時間が余ったら)</p>
+				<h2>Redmine <span style="color: #cc0000">LDRize</span> Plugin</h2>
+				<p>で Livedoor Reader のような操作性を手に入れろ</p>
+				<p>
+					<a href="https://github.com/matobaa/redmine_ld_rize">
+						<code style="font-size: 80%">https://github.com/matobaa/redmine_ld_rize</code>
+					</a>
+				</p>
+				<br clear />
+				<hr />
+				<p>Redmine.tokyo 第20回勉強会 2021-05-22 <a href="https://twitter.com/search?q=%23redmineT"><code style="color: #00acee">#redmineT</code></a></p>
+				<p> <a href="https://twitter.com/matobaa"><i class="fab fa-twitter-square" aria-hidden="true"></i></a>
+					<a href="https://www.facebook.com/matobaa"><i class="fab fa-facebook-square"
+							aria-hidden="true"></i></a>
+					<a href="https://github.com/matobaa"><i class="fab fa-github-square" aria-hidden="true"></i></a>
+					matobaa
+				</p>
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">LDRize</span> Plugin とは</h3>
+				<ol>
+					<li><img src="https://redmine.org/attachments/download/11660" align="right" width=200px />
+						<code class=key>j</code>, <code class=key>k</code> キーでカーソルを移動して
+					</li>
+					<li><code class=key>p</code>キーでマークして<code class=key>o</code>キーで開く</li>
+					<li>複数を一気に開ける<br /> (「ポップアップを許可」が必要かも)</li>
+					<li> my_page / プロジェクトリスト / issue List / issue / wiki index で使える</li>
+				</ol>
+				<hr />
+				<p>スター、プルリク、お待ちしています!<br />
+					<a
+						href="https://github.com/matobaa/redmine_ld_rize"><code>https://github.com/matobaa/redmine_ld_rize</code></a>
+				</p>
+			</section>
+
+			<section>
+				<p>(時間が余ったら)</p>
+				<h2>Redmine <span style="color: #cc0000">Edit CF at issue index</span> Plugin</h2>
+				<p>で <span style="color: #008822"><i class="fas fa-file-excel"></i>表計算ソフト</span> のような操作性を手に入れろ</p>
+				<p>
+					<a href="https://github.com/matobaa/redmine_edit_cf_at_issues_index">
+						<code style="font-size: 80%">https://github.com/matobaa/redmine_edit_cf_at_issues_index</code>
+					</a>
+				</p>
+				<br clear />
+				<hr />
+				<p>Redmine.tokyo 第20回勉強会 2021-05-22 <a href="https://twitter.com/search?q=%23redmineT"><code style="color: #00acee">#redmineT</code></a></p>
+				<p> <a href="https://twitter.com/matobaa"><i class="fab fa-twitter-square" aria-hidden="true"></i></a>
+					<a href="https://www.facebook.com/matobaa"><i class="fab fa-facebook-square"
+							aria-hidden="true"></i></a>
+					<a href="https://github.com/matobaa"><i class="fab fa-github-square" aria-hidden="true"></i></a>
+					matobaa
+				</p>
+			</section>
+			<section>
+				<h3>Redmine <span style="color: #cc0000">Edit CF at issue index</span> Plugin とは</h3>
+				<ol>
+					<li><img src="https://repository-images.githubusercontent.com/364400374/13868680-ad7e-11eb-8208-d9d3c1c14b3c"
+							align="right" />
+						Issue一覧画面(カスタムクエリ画面)でカスタムフィールドを編集して</li>
+					<li><code class=key>Enter</code>キーを押すと、Issueを更新できる</li>
+				</ol>
+				<hr />
+				<p>スター、プルリク、お待ちしています!<br />
+					<a href="https://github.com/matobaa/redmine_edit_cf_at_issues_index"><code
+							style="font-size: 80%">https://github.com/matobaa/redmine_edit_cf_at_issues_index</code></a>
+				</p>
+				<p>Lycheeにも <a
+						href="https://manual.lychee-redmine.jp/issue_spread_sheet/issue_spread_sheet.html#%E2%9D%8F-lychee%E3%83%81%E3%82%B1%E3%83%83%E3%83%88%E3%82%B9%E3%83%97%E3%83%AC%E3%83%83%E3%83%89%E3%82%B7%E3%83%BC%E3%83%88%E3%81%A8%E3%81%AF">スプレッドシート</a>機能がありました
+				</p>
+			</section>
+
+		</div>
+	</div>
+
+	<!-- <script src="js/reveal.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.0/reveal.js"
+		integrity="sha512-LGXpHNR8kKb3liBoiowLefRfx9BahbZ0FWE8vfTOV3vU4jD/9SpoyZQ49rc7gBwSzbFTZAaLCsSkpujb6ic+Og=="
+		crossorigin="anonymous"></script>
+
+	<script>
+		// - https://revealjs.com/config/
+		// - https://github.com/hakimel/reveal.js#dependencies
+		Reveal.initialize({
+			slideNumber: true,
+			history: true,
+			center: false,
+			controlsLayout: 'edges',
+			transition: 'none', // none/fade/slide/convex/concave/zoom
+			transitionSpeed: 'fast', // default/fast/slow
+			hideInactiveCursor: false,
+			dependencies: [
+				// { src: 'plugin/markdown/marked.js' },
+				// { src: 'plugin/markdown/markdown.js' },
+				// { src: 'plugin/notes/notes.js', async: true },
+				// { src: 'plugin/highlight/highlight.js', async: true }
+			]
+		});
+	</script>
+</body>
+
+</html>
