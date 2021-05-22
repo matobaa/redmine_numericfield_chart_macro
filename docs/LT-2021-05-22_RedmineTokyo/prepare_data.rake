@@ -2,6 +2,7 @@
 
 How to use this script:
 
+ DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=production
 REDMINE_LANG=en rails db:drop db:create db:migrate redmine:load_default_data
 rails -R $(pwd) redmine:prepare_LT_data
 
@@ -50,10 +51,10 @@ namespace :redmine do
             "お兄ちゃん": {"2021-05-15":"36.5", "2021-05-16":"36.7", "2021-05-22":"36.4"}
         },
         "ベンチプレス": {
-            "福島由佳子": {"2020-11-22": "130", "2021-04-24": "132.5"},
-            "早川琴果": {"2020-11-22": "122.5", "2021-04-24": "110"},
-            "寺村美香": {"2020-11-22": "107.5", "2021-04-24": "90"},
-            "田中 彰子": {"2021-02-20": "55.0", "2021-04-24": "72.5"}
+            "福島さん": {"2020-11-22": "130", "2021-04-24": "132.5"},
+            "早川さん": {"2020-11-22": "122.5", "2021-04-24": "110"},
+            "寺村さん": {"2020-11-22": "107.5", "2021-04-24": "90"},
+            "田中さん": {"2021-02-20": "55.0", "2021-04-24": "72.5"}
         },
         "残数": {
             "牛乳": {"2021-05-17": "4", "2021-05-19": "3", "2021-05-20": "2", "2021-05-21": "1"},
@@ -71,7 +72,7 @@ namespace :redmine do
 
         data.each do |cf_name, issues|
             cf = CustomField.find_or_create_by!(:name => cf_name, :type => 'IssueCustomField',
-                :is_for_all => true, :field_format => 'float')
+                :is_for_all => true, :is_filter => true, :field_format => 'float')
             tracker.custom_fields.append(cf) if !tracker.custom_fields.include?(cf)
             issues = issues.map do |subject, time_series|
                 datetime, value = time_series.shift
@@ -83,7 +84,7 @@ namespace :redmine do
                     issue.clear_journal
                     journal = issue.init_journal(author)
                     p cf, issue
-                    cv = CustomValue.find_by!(:custom_field => cf, :customized => issue)
+                    cv = CustomValue.find_or_create_by!(:custom_field => cf, :customized => issue)
                     cv.value = value
                     cv.save!
                     Time.fake(Time.parse datetime) do
