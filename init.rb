@@ -29,6 +29,10 @@ Redmine::WikiFormatting::Macros.register do
     Render a chart of custom values of the specified issue
 
     {{numericfield_chart(cf_name, 2, 3, 5)}}    -- values of custom_field "cf_name" of issue #2, #3, #5
+    {{numericfield_chart(cf_name, query-string)}}    -- values of custom_field "cf_name" of issue queried by the query-string
+    query-string: ex:
+    "set_filter=1&sort=id:desc&f[]=status_id&op[status_id]=o&f[]=tracker_id&v[tracker_id][]=1"
+    decodeURIComponent(document.location.search).replace(/^\?/,'').split('&').filter(q=>!q.match(/([^=]=$|^c\[\]|^(sort|utf8|set_filter)=)/)).join('&')
   DESC
   macro :numericfield_chart do |obj, args|
     cf_name = args.shift
@@ -44,7 +48,16 @@ Redmine::WikiFormatting::Macros.register do
       issues = args.map &:to_i
     else
       query = IssueQuery.find_by(:name => args.first)
-      issues = query.issue_ids if query&.visible?
+      if query
+        issues = query.issue_ids if query&.visible?
+      else
+        query_string = args.first
+        params_hash = Rack::Utils.parse_nested_query(query_string, '&;')
+        params = ActionController::Parameters.new(params_hash)
+        query = IssueQuery.new(:name => "_", :project => @project)
+        query.build_from_params(params)
+        issues = query.issue_ids
+      end
     end
     issues.delete(0)
 
