@@ -29,6 +29,10 @@ Redmine::WikiFormatting::Macros.register do
     Render a chart of custom values of the specified issue
 
     {{numericfield_chart(cf_name, 2, 3, 5)}}    -- values of custom_field "cf_name" of issue #2, #3, #5
+    {{numericfield_chart(cf_name, query-string)}}    -- values of custom_field "cf_name" of issue queried by the query-string
+    query-string: ex:
+    "set_filter=1&sort=id:desc&f[]=status_id&op[status_id]=o&f[]=tracker_id&v[tracker_id][]=1"
+    decodeURIComponent(document.location.search).replace(/^\?/,'').split('&').filter(q=>!q.match(/([^=]=$|^c\[\]|^(sort|utf8|set_filter)=)/)).join('&')
   DESC
   macro :numericfield_chart do |obj, args|
     cf_name = args.shift
@@ -36,15 +40,35 @@ Redmine::WikiFormatting::Macros.register do
       raise "numericfield_chart: requires exactly correct custom field name on 1st argument."
     end
 
-    if(args.empty?)
-      raise "numericfield_chart: no issue numbers. it requires issue numbers follows with a custom field name."
-    end
     issues = []
-    if args.first.to_i > 0 then
+    if(args.empty?)
+      query_params = session[IssueQuery.name.underscore.to_sym]
+      if(!query_params.present?)
+        raise "numericfield_chart: no issue numbers. it requires issue numbers follows with a custom field name."
+      else  # fallback with queries in session if exist
+        query = IssueQuery.new(:name => "_",
+          :project => Project.find_by_id(query_params[:project_id]) || @project,
+          :filters => query_params[:filters],
+          :group_by => query_params[:group_by],
+          :column_names => query_params[:column_names],
+          :totalable_names => query_params[:totalable_names],
+          :sort_criteria => query_params[:sort])
+        issues = query.issue_ids
+      end
+    elsif args.first.to_i > 0
       issues = args.map &:to_i
     else
       query = IssueQuery.find_by(:name => args.first)
-      issues = query.issue_ids if query&.visible?
+      if query
+        issues = query.issue_ids if query&.visible?
+      else
+        query_string = args.first
+        params_hash = Rack::Utils.parse_nested_query(query_string, '&;')
+        params = ActionController::Parameters.new(params_hash)
+        query = IssueQuery.new(:name => "_", :project => @project)
+        query.build_from_params(params)
+        issues = query.issue_ids
+      end
     end
     issues.delete(0)
 
