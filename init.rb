@@ -40,11 +40,22 @@ Redmine::WikiFormatting::Macros.register do
       raise "numericfield_chart: requires exactly correct custom field name on 1st argument."
     end
 
-    if(args.empty?)
-      raise "numericfield_chart: no issue numbers. it requires issue numbers follows with a custom field name."
-    end
     issues = []
-    if args.first.to_i > 0 then
+    if(args.empty?)
+      query_params = session[IssueQuery.name.underscore.to_sym]
+      if(!query_params.present?)
+        raise "numericfield_chart: no issue numbers. it requires issue numbers follows with a custom field name."
+      else  # fallback with queries in session if exist
+        query = IssueQuery.new(:name => "_",
+          :project => Project.find_by_id(query_params[:project_id]) || @project,
+          :filters => query_params[:filters],
+          :group_by => query_params[:group_by],
+          :column_names => query_params[:column_names],
+          :totalable_names => query_params[:totalable_names],
+          :sort_criteria => query_params[:sort])
+        issues = query.issue_ids
+      end
+    elsif args.first.to_i > 0
       issues = args.map &:to_i
     else
       query = IssueQuery.find_by(:name => args.first)
